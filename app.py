@@ -1,61 +1,77 @@
 import streamlit as st
 
 # Seite konfigurieren
-st.set_page_config(page_title="Der Sandmann - Ein Nachtstück", page_icon="📜")
+st.set_page_config(page_title="Der Sandmann - Ein Nachtstück", page_icon="📜", layout="centered")
 
-# CSS FIX: Damit das Papier (Buch) über dem Holz erscheint
+# CSS für das "Echte Buch"-Gefühl
 st.markdown("""
     <style>
-    /* Hintergrund: Holzplatte */
+    /* Hintergrund: Dunkles Holz */
     .stApp {
         background-image: url("https://www.transparenttextures.com/patterns/wood-pattern.png");
-        background-color: #3d2b1f;
+        background-color: #2b1d12;
     }
 
-    /* Das "Buch" / Die Papierseite */
+    /* Das Buch-Papier */
     [data-testid="stVerticalBlock"] > div:first-child {
-        background-color: #f4ecd8; /* Helles Papier */
-        padding: 40px;
-        border-radius: 5px;
-        box-shadow: 15px 15px 30px rgba(0,0,0,0.8);
-        border-left: 12px solid #d4c5a1; /* Buchrücken */
-        margin: 20px auto;
-        max-width: 700px;
-        animation: turnPage 1s ease-out;
+        background-color: #f2e8cf; /* Warmes Pergament */
+        background-image: url("https://www.transparenttextures.com/patterns/parchment.png"); /* Papier-Struktur */
+        padding: 60px 50px !important;
+        border-radius: 3px 15px 15px 3px; /* Rechts abgerundet wie eine Buchseite */
+        box-shadow: 20px 20px 40px rgba(0,0,0,0.9);
+        border-left: 20px solid #3d2b1f; /* Dunkler Buchrücken */
+        margin: 40px auto;
+        max-width: 650px;
+        min-height: 800px;
+        animation: turnPage 1.5s ease-in-out;
+        position: relative;
     }
 
-    /* Animation für das Umblättern */
+    /* Animation: Leichtes Aufklappen */
     @keyframes turnPage {
-        0% { transform: rotateY(-15deg); opacity: 0; }
-        100% { transform: rotateY(0deg); opacity: 1; }
+        0% { transform: perspective(1000px) rotateY(-20deg); opacity: 0; }
+        100% { transform: perspective(1000px) rotateY(0deg); opacity: 1; }
     }
 
-    /* Schriftart: Tinte / Special Elite */
+    /* Schriftart: Alte Tinte */
     @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
     
-    html, body, [class*="css"], .stMarkdown {
+    html, body, [class*="css"], .stMarkdown, p {
         font-family: 'Special Elite', serif !important;
-        color: #2c1e1a !important; /* Dunkle Tinte */
+        color: #261a15 !important;
+        font-size: 1.1rem !important;
+        line-height: 1.7 !important;
     }
 
-    h1, h2, h3 {
+    h1, h2 {
         color: #1a0f0d !important;
         text-align: center;
-        border-bottom: 1px solid #d4c5a1;
+        border-bottom: 2px solid #d4c5a1;
+        margin-bottom: 30px !important;
+        padding-bottom: 15px !important;
     }
 
-    /* Buttons schöner machen */
+    /* Buttons als alte Etiketten */
     .stButton>button {
-        background-color: #e2d1b3;
-        color: #2c1e1a;
-        border: 1px solid #2c1e1a;
+        background-color: #d4c5a1;
+        color: #261a15;
+        border: 1px solid #261a15;
         font-family: 'Special Elite', serif;
-        border-radius: 2px;
+        border-radius: 0px;
+        margin-top: 20px;
+        box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+        transition: all 0.3s;
+    }
+
+    .stButton>button:hover {
+        background-color: #261a15;
+        color: #f2e8cf;
+        transform: scale(1.02);
     }
     </style>
     """, unsafe_allow_html=True)
 
-# Spiel-Logik (wie gehabt)
+# Spiel-Logik
 if 'page' not in st.session_state:
     st.session_state.page = 'intro'
 
@@ -65,49 +81,49 @@ def change_page(name):
 
 # --- INHALT ---
 if st.session_state.page == 'intro':
-    st.title("📜 Der Sandmann")
-    st.write("D. 19. November. [cite: 230]")
-    st.write("*»Gewiß seid ihr alle voll Unruhe, daß ich so lange - lange nicht geschrieben.«* [cite: 248]")
-    st.write("Ein Wetterglashändler namens Coppola ist erschienen. Er weckt dunkle Ahnungen eines gräßlichen Geschicks. [cite: 254, 258]")
-    if st.button("Das Buch aufschlagen..."):
+    st.title("📜 DER SANDMANN")
+    st.write("D. 19. November.")
+    st.write("»Gewiß bist Du voll Unruhe, daß ich so lange nicht geschrieben...«")
+    st.write("Ein gräßliches Schicksal hat mich ereilt. Coppola, der Wetterglashändler... er ist es!")
+    if st.button("Blättere um..."):
         change_page('kindheit')
 
 elif st.session_state.page == 'kindheit':
-    st.subheader("Kapitel I: Der Besucher")
-    st.write("Abends um neun Uhr schlägt die Uhr. Die Mutter ruft: »Der Sandmann kommt!« [cite: 279, 280]")
-    st.write("Du hörst das Poltern auf der Treppe. [cite: 281] Wem willst du glauben?")
+    st.subheader("Die Kindheit")
+    st.write("»Der Sandmann kommt!« - Du hörst die Tritte. Wer ist er?")
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("Glaube der Mutter"):
+        if st.button("Mutter fragen"):
             st.session_state.info = "mutter"
             change_page('labor')
     with col2:
-        if st.button("Glaube der Amme"):
+        if st.button("Amme fragen"):
             st.session_state.info = "amme"
             change_page('labor')
 
 elif st.session_state.page == 'labor':
-    st.subheader("Kapitel II: Die Beobachtung")
+    st.subheader("Das Versteck")
     if st.session_state.info == "mutter":
-        st.write("Sie sagt, es gäbe keinen Sandmann. [cite: 284] Doch das Poltern bleibt.")
+        st.write("Sie lächelte, aber du sahst die Furcht. Er kommt trotzdem.")
     else:
-        st.write("Die Amme erzählt von den Kinderaugen, die Coppelius für seine Jungen im Mond raubt. [cite: 286]")
+        st.write("Die Amme sprach von blutigen Augen und Eulenkindern im Mond.")
     
-    st.write("Du versteckst dich im Arbeitszimmer. [cite: 313] Coppelius tritt ein. Er schwingt eine glutrothe Zange. [cite: 377, 385]")
-    st.write("»Augen her! Augen her!«, dröhnt seine Stimme. [cite: 377, 387]")
-    if st.button("Blättere weiter..."):
+    st.write("Du versteckst dich. Coppelius tritt ein. 'Augen her! Augen her!'")
+    if st.button("Das Trauma erleben..."):
         change_page('olympia')
 
 elif st.session_state.page == 'olympia':
-    st.subheader("Kapitel III: Olimpia")
-    st.write("Du liebst Olimpia. Doch ein Streit bricht aus. Spalanzani und Coppola zerren an ihr. [cite: 394]")
-    st.write("Plötzlich siehst du: Es ist eine Puppe. Ihre Augen liegen als blutige Murmeln auf dem Boden.")
-    if st.button("Zum Finale blättern..."):
+    st.subheader("Olimpia")
+    st.write("Du blickst durch das Perspektiv. Die schöne Olimpia...")
+    st.write("Plötzlich bricht der Streit aus. Spalanzani wirft dir Olimpias Augen an die Brust.")
+    st.write("Sie sind aus Glas. Sie ist eine Puppe!")
+    if st.button("Zum Wahnsinn blättern..."):
         change_page('finale')
 
 elif st.session_state.page == 'finale':
-    st.subheader("Kapitel IV: Der Sprung")
-    st.write("Du stehst auf dem Turm. Unten wartet Coppelius. [cite: 371]")
-    st.write("Der Wahnsinn packt dich: »Ha! Sköne Oke – Sköne Oke!« [cite: 380, 394]")
-    if st.button("Das Buch schließen"):
+    st.subheader("Das Ende")
+    st.write("Auf dem Ratsturm. Clara zeigt dir die Aussicht. Du ziehst das Glas.")
+    st.write("Da unten steht er: Coppelius.")
+    st.markdown("### »Sköne Oke – Sköne Oke!«")
+    if st.button("Das Buch zuschlagen"):
         change_page('intro')
