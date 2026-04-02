@@ -3,7 +3,7 @@ import streamlit as st
 # Seite konfigurieren
 st.set_page_config(page_title="Der Sandmann", page_icon="📜")
 
-# --- CSS: STABILES 180° DESIGN ---
+# --- DAS REPARIERTE ANIMATIONS-CSS ---
 st.markdown("""
     <style>
     /* Hintergrund: Holzplatte */
@@ -12,15 +12,15 @@ st.markdown("""
         background-color: #2b1d12;
     }
 
-    /* Der Bereich um das Buch herum */
+    /* Der Container für die 3D-Perspektive */
     .book-viewport {
-        perspective: 2000px;
+        perspective: 2500px;
         display: flex;
         justify-content: center;
-        padding: 20px;
+        padding: 40px 20px;
     }
 
-    /* Die Buchseite selbst - FESTE GRÖSSE UND STRUKTUR */
+    /* Die Buchseite */
     .paper {
         background-color: #f2e8cf;
         background-image: url("https://www.transparenttextures.com/patterns/parchment.png");
@@ -33,19 +33,19 @@ st.markdown("""
         max-width: 700px;
         min-height: 600px;
         
-        /* Die 180 Grad Animation beim Laden */
+        /* HIER IST DIE MAGIE: 180 Grad Drehung */
         transform-origin: left center;
-        animation: pageFlip180 1s ease-out forwards;
         backface-visibility: hidden;
+        animation: flipIn 1.2s cubic-bezier(0.15, 0.0, 0.3, 1.0) forwards;
     }
 
-    @keyframes pageFlip180 {
+    @keyframes flipIn {
         0% { transform: rotateY(-180deg); opacity: 0; }
-        20% { opacity: 1; }
+        30% { opacity: 1; }
         100% { transform: rotateY(0deg); opacity: 1; }
     }
 
-    /* Schrift & Text-Styling */
+    /* Schriftart & Styling */
     @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
     
     .paper, .stMarkdown, p, h1, h2, h3 {
@@ -55,7 +55,7 @@ st.markdown("""
 
     h1 { border-bottom: 2px solid #d4c5a1; padding-bottom: 10px; text-align: center; }
 
-    /* Buttons unter dem Buch */
+    /* Buttons passend zum Buch */
     .stButton>button {
         background-color: #d4c5a1 !important;
         color: #261a15 !important;
@@ -64,7 +64,12 @@ st.markdown("""
         border-radius: 0px !important;
         width: 100%;
         height: 3.5em;
-        margin-top: 10px;
+        margin-top: 15px;
+        transition: 0.3s;
+    }
+    .stButton>button:hover {
+        background-color: #261a15 !important;
+        color: #f2e8cf !important;
     }
     
     header {visibility: hidden;}
@@ -81,18 +86,19 @@ def change_page(name):
     st.rerun()
 
 # --- INHALT ---
-# Wir nutzen den Viewport für die Zentrierung und das Paper für das Design
 st.markdown('<div class="book-viewport">', unsafe_allow_html=True)
 
+# Wir nutzen f-Strings, um für jede Seite eine eindeutige ID zu vergeben. 
+# Das zwingt den Browser, die Animation jedes Mal neu zu starten.
 if st.session_state.page == 'intro':
-    content = """<h1>📜 DER SANDMANN</h1><p>D. 19. November.</p><p><i>»Gewiß bist Du voll Unruhe...«</i></p><p>Ein Wetterglashändler namens Coppola war hier. Er hat alles verändert.</p>"""
-    st.markdown(f'<div class="paper">{content}</div>', unsafe_allow_html=True)
+    content = """<h1>📜 DER SANDMANN</h1><p>D. 19. November.</p><p><i>»Gewiß bist Du voll Unruhe...«</i></p>"""
+    st.markdown(f'<div class="paper" id="p1">{content}</div>', unsafe_allow_html=True)
     if st.button("Das Buch aufschlagen"):
         change_page('kindheit')
 
 elif st.session_state.page == 'kindheit':
-    content = """<h2>Kapitel I: Die Angst</h2><p>Um neun Uhr klopft es. »Der Sandmann kommt!«</p><p>Wer verbirgt sich hinter dem Namen?</p>"""
-    st.markdown(f'<div class="paper">{content}</div>', unsafe_allow_html=True)
+    content = """<h2>Kapitel I: Die Angst</h2><p>Um neun Uhr klopft es. »Der Sandmann kommt!«</p>"""
+    st.markdown(f'<div class="paper" id="p2">{content}</div>', unsafe_allow_html=True)
     col1, col2 = st.columns(2)
     with col1:
         if st.button("Mutter fragen"):
@@ -102,21 +108,21 @@ elif st.session_state.page == 'kindheit':
             st.session_state.info = "amme"; change_page('labor')
 
 elif st.session_state.page == 'labor':
-    info = "Märchen." if st.session_state.info == "mutter" else "Augenfresser."
-    content = f"<h2>Kapitel II: Coppelius</h2><p>{info}</p><p>Du siehst ihn am Feuer. <b>»Augen her!«</b></p>"
-    st.markdown(f'<div class="paper">{content}</div>', unsafe_allow_html=True)
-    if st.button("Blättere zu Olimpia..."):
+    info = "Ein Märchen." if st.session_state.info == "mutter" else "Er frisst Augen."
+    content = f"<h2>Kapitel II</h2><p>{info}</p><p><b>»Augen her!«</b></p>"
+    st.markdown(f'<div class="paper" id="p3">{content}</div>', unsafe_allow_html=True)
+    if st.button("Jahre später..."):
         change_page('olympia')
 
 elif st.session_state.page == 'olympia':
-    content = "<h2>Kapitel III: Die Puppe</h2><p>Olimpias Augen liegen auf dem Boden. Kalte Glasmurmeln.</p>"
-    st.markdown(f'<div class="paper">{content}</div>', unsafe_allow_html=True)
-    if st.button("Zum Wahnsinn blättern..."):
+    content = "<h2>Kapitel III</h2><p>Die Augen liegen auf dem Boden. Kalte Glasmurmeln.</p>"
+    st.markdown(f'<div class="paper" id="p4">{content}</div>', unsafe_allow_html=True)
+    if st.button("Zum Finale..."):
         change_page('finale')
 
 elif st.session_state.page == 'finale':
-    content = "<h2>Kapitel IV: Der Turm</h2><p><b>»Ha! Sköne Oke – Sköne Oke!«</b></p>"
-    st.markdown(f'<div class="paper">{content}</div>', unsafe_allow_html=True)
+    content = "<h2>Kapitel IV</h2><p><b>»Ha! Sköne Oke – Sköne Oke!«</b></p>"
+    st.markdown(f'<div class="paper" id="p5">{content}</div>', unsafe_allow_html=True)
     if st.button("Buch zuschlagen"):
         change_page('intro')
 
