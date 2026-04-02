@@ -3,7 +3,7 @@ import streamlit as st
 # Seite konfigurieren
 st.set_page_config(page_title="Der Sandmann - Chronik des Wahnsinns", page_icon="📜")
 
-# --- CSS: DESIGN ---
+# --- CSS: DESIGN (Unverändert, da es top aussah) ---
 st.markdown("""
     <style>
     .stApp {
@@ -54,8 +54,10 @@ if 'page' not in st.session_state:
     st.session_state.page = 'start'
 if 'story_choice' not in st.session_state:
     st.session_state.story_choice = None
-if 'bought_glass' not in st.session_state:
-    st.session_state.bought_glass = False
+if 'father_reaction' not in st.session_state:
+    st.session_state.father_reaction = None
+if 'professor_reaction' not in st.session_state:
+    st.session_state.professor_reaction = None
 
 def navigate(to):
     st.session_state.page = to
@@ -92,53 +94,73 @@ elif st.session_state.page == 'arbeitszimmer':
     """
     st.markdown(f'<div class="paper">{content}</div>', unsafe_allow_html=True)
     if st.button("1) Dein Vater fleht um Gnade: 'Meister, lass ihm die Augen!'"):
+        st.session_state.father_reaction = "gnade"
         navigate('studium')
     if st.button("2) Du versuchst verzweifelt zu fliehen, aber die Angst lähmt dich."):
+        st.session_state.father_reaction = "angst"
         navigate('studium')
 
 elif st.session_state.page == 'studium':
-    content = """
+    if st.session_state.father_reaction == "gnade":
+        reaction_text = "Dein Vater wirft sich weinend vor Coppelius. 'Meister, lass ihm die Augen!', fleht er. Coppelius lacht hämisch, lässt dich aber los, nur um dir symbolisch Hände und Füße auszuschrauben."
+    else:
+        reaction_text = "Du starrst wie gebannt in die Flammen, unfähig dich zu bewegen. Coppelius packt dich grob: 'Schöne Augen! Schöne Augen!', murmelt er, während er dich fast in die Glut drückt, bevor er dich wie ein kaputtes Spielzeug wegwirft."
+    
+    content = f"""
     <h2>Studium in Gießen</h2>
-    <p>Kurz nach jener Nacht starb dein Vater bei einer Explosion. Coppelius verschwand.</p>
-    <p>Jahre später studierst du in <b>Gießen</b>. Ein Wetterglashändler namens <b>Coppola</b> taucht auf. Er sieht exakt aus wie Coppelius!</p>
-    <p>Coppola bietet dir ein Perspektiv (Fernrohr) an. Was tust du?</p>
+    <p>{reaction_text}</p>
+    <p>Kurz nach jener Nacht starb dein Vater bei einer Explosion. Coppelius verschwand spurlos.</p>
+    <p>Jahre später studierst du in <b>Gießen</b>. Ein Wetterglashändler namens <b>Coppola</b> taucht auf. Er sieht exakt aus wie Coppelius! Er bietet dir ein Perspektiv an.</p>
     """
     st.markdown(f'<div class="paper">{content}</div>', unsafe_allow_html=True)
     if st.button("1) Ja, du kaufst es sofort."):
-        st.session_state.bought_glass = True
         navigate('holzpuppe')
     if st.button("2) Nein, du wirfst ihn voller Zorn hinaus!"):
-        st.session_state.bought_glass = False
         navigate('reue')
 
 elif st.session_state.page == 'reue':
     content = """
     <h2>Die quälende Neugier</h2>
-    <p>Du hast Coppola hinausgeworfen, doch sein Bild lässt dich nicht los. Die Angst mischt sich mit einer krankhaften Neugier auf das Haus des Professors Spalanzani gegenüber.</p>
+    <p>Du hast Coppola hinausgeworfen, doch sein Bild lässt dich nicht los. Die Angst mischt sich mit einer krankhaften Neugier.</p>
     <p>Nach Tagen der Unruhe suchst du Coppola heimlich auf und kaufst das Perspektiv doch noch. Du musst wissen, was sich hinter den Fenstern verbirgt.</p>
     """
     st.markdown(f'<div class="paper">{content}</div>', unsafe_allow_html=True)
     if st.button("Blicke durch das Glas..."):
-        st.session_state.bought_glass = True
         navigate('holzpuppe')
 
 elif st.session_state.page == 'holzpuppe':
     content = """
     <h2>Die Holzpuppe</h2>
-    <p>Durch das Perspektiv erblickst du <b>Olimpia</b>. Sie ist wunderschön, aber völlig starr. Du verliebst dich in ihre Stille. Deine Verlobte Clara vergisst du völlig.</p>
-    <p>Eines Tages stürmst du in Spalanzanis Haus. Er und Coppola zerren an Olimpia. Es kracht – <b>sie ist aus Holz!</b></p>
+    <p>Durch das Perspektiv erblickst du <b>Olimpia</b>. Sie ist wunderschön, aber völlig starr. Eines Tages stürmst du in Spalanzanis Haus. Er und Coppola zerren an Olimpia. Es kracht – <b>sie ist aus Holz!</b></p>
     <p>Coppola raubt ihr die Augen und flieht. Spalanzani wirft dir Olimpias blutige Glasaugen an die Brust: 'Nimm sie!'</p>
     """
     st.markdown(f'<div class="paper">{content}</div>', unsafe_allow_html=True)
     if st.button("1) Der Wahnsinn packt dich. Du würgst den Professor."):
-        navigate('finale')
+        st.session_state.professor_reaction = "wuergen"
+        navigate('wahnsinn_text')
     if st.button("2) Du brichst schreiend zusammen und landest im Tollhaus."):
+        st.session_state.professor_reaction = "zusammenbruch"
+        navigate('wahnsinn_text')
+
+elif st.session_state.page == 'wahnsinn_text':
+    if st.session_state.professor_reaction == "wuergen":
+        wahnsinn_desc = "Mit übermenschlicher Kraft stürzt du dich auf Spalanzani. 'Feuerkreis! Feuerkreis!', schreist du, während du versuchst, ihm das Leben auszupressen. Nur das Eingreifen der herbeieilenden Studenten rettet ihn vor deinem Zorn."
+    else:
+        wahnsinn_desc = "Ein gellender Schrei entfährt deiner Kehle. Die Realität zerbricht in tausend Scherben. Du fällst zu Boden, die blutigen Glasaugen in den Händen, und lachst hysterisch, während die Dunkelheit dich verschlingt."
+    
+    content = f"""
+    <h2>Der Abgrund</h2>
+    <p>{wahnsinn_desc}</p>
+    <p>Man bringt dich weg. Es folgen dunkle Monate im Tollhaus von Gießen, fernab von Licht und Vernunft. Doch irgendwann scheinst du geheilt...</p>
+    """
+    st.markdown(f'<div class="paper">{content}</div>', unsafe_allow_html=True)
+    if st.button("Zurück zu Clara..."):
         navigate('finale')
 
 elif st.session_state.page == 'finale':
     content = """
     <h2>Das Finale</h2>
-    <p>Monate später scheinst du geheilt. Mit Clara besteigst du den Ratsturm. Du nimmst dein Perspektiv zur Hand... und im Glas erscheint Coppola!</p>
+    <p>Alles scheint gut. Mit Clara besteigst du den Ratsturm. Du nimmst dein Perspektiv zur Hand... und im Glas erscheint Coppola!</p>
     <p>Der Wahnsinn bricht aus. Du schreist: <b>'Holzpüppchen dreh dich!'</b> und willst Clara in den Abgrund werfen.</p>
     """
     st.markdown(f'<div class="paper">{content}</div>', unsafe_allow_html=True)
